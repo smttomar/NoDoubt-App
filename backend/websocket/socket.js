@@ -1,8 +1,8 @@
 import { WebSocketServer } from "ws";
-import Post from "../models/post.js";
+import Post from "../models/Post.js";
 
 const startWebSocketServer = (server) => {
-    const wss = new WebSocketServer({ port: process.env.WS_PORT || 8080 });
+    const wss = new WebSocketServer({ server });
 
     wss.on("connection", (ws) => {
         console.log("Client connected");
@@ -11,10 +11,16 @@ const startWebSocketServer = (server) => {
             try {
                 const query = message.toString().trim();
 
-                // Search in DB (case insensitive)
-                const results = await Post.find({
-                    title: { $regex: query, $options: "i" },
-                }).limit(20);
+                let results;
+
+                // If empty return all posts
+                if (!query) {
+                    results = await Post.find();
+                } else {
+                    results = await Post.find({
+                        title: { $regex: query, $options: "i" },
+                    }).limit(50);
+                }
 
                 ws.send(JSON.stringify(results));
             } catch (error) {
