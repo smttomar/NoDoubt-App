@@ -1,5 +1,5 @@
 import axios from "axios";
-import Post from "../models/post.js";
+import Post from "../models/Post.js";
 import express, { json } from "express";
 
 const router = express.Router();
